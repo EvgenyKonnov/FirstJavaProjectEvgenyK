@@ -42,16 +42,30 @@ public class TestPet {
     }
 
     @Test
+    @Owner("Evgeny Konnov")
+    @Description("Проверка получения данных о несуществующем питомце")
+    @Severity(SeverityLevel.CRITICAL)
+    @Feature("Pet")
     public void testGetNoneExistentPet() {
-        Response response = given()
-                .contentType(ContentType.JSON)
-                .header("Accept", "application/json")
-                .when()
-                .get(BASE_URL + "/pet/9999");
+        Response response = step("Проверить что статус-код в ответе == 404", ()->
+                given()
+                    .contentType(ContentType.JSON)
+                    .header("Accept", "application/json")
+                    .when()
+                    .get(BASE_URL + "/pet/9999")
+        );
 
-        assertEquals(404, response.getStatusCode(),
-                "Код ответа не совпал с ожидаемым. Ответ " + response.getBody().asString());
+        String responseBody = response.getBody().asString();
+
+        step("Проверить что текст в ответе 'Pet not found'", ()->
+                assertEquals("Pet not found", responseBody,
+                        "Текст ошибки не совпал с ожидаемым. Получен: " + responseBody)
+        );
+
+
+        step("Проверить что статус-код в ответе == 404", ()->
+                assertEquals(404, response.getStatusCode(),
+                        "Код ответа не совпал с ожидаемым. Ответ " + response.getBody().asString())
+        );
     }
-
-
 }
