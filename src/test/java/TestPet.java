@@ -4,6 +4,8 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.nio.channels.AcceptPendingException;
+
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,5 +39,33 @@ public class TestPet {
                         assertEquals("Pet deleted", responseBody,
                                 "Текст ошибки не совпал с ожидаемым. Получен: " + responseBody)
                 );
+    }
+
+    @Test
+    @Owner("Evgeny Konnov")
+    @Description("Проверка получения данных о несуществующем питомце")
+    @Severity(SeverityLevel.CRITICAL)
+    @Feature("Pet")
+    public void testGetNoneExistentPet() {
+        Response response = step("Проверить что статус-код в ответе == 404", ()->
+                given()
+                    .contentType(ContentType.JSON)
+                    .header("Accept", "application/json")
+                    .when()
+                    .get(BASE_URL + "/pet/9999")
+        );
+
+        String responseBody = response.getBody().asString();
+
+        step("Проверить что текст в ответе 'Pet not found'", ()->
+                assertEquals("Pet not found", responseBody,
+                        "Текст ошибки не совпал с ожидаемым. Получен: " + responseBody)
+        );
+
+
+        step("Проверить что статус-код в ответе == 404", ()->
+                assertEquals(404, response.getStatusCode(),
+                        "Код ответа не совпал с ожидаемым. Ответ " + response.getBody().asString())
+        );
     }
 }
