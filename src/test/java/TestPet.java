@@ -1,11 +1,7 @@
 import io.qameta.allure.*;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import java.nio.channels.AcceptPendingException;
-
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,7 +57,6 @@ public class TestPet {
                 assertEquals("Pet not found", responseBody,
                         "Текст ошибки не совпал с ожидаемым. Получен: " + responseBody)
         );
-
 
         step("Проверить что статус-код в ответе == 404", ()->
                 assertEquals(404, response.getStatusCode(),
